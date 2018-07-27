@@ -1,8 +1,10 @@
 #include "KinectV1Capture.h"
 
+
 KinectV1Capture::KinectV1Capture() {
 	colorImg.create(color_height, color_width, CV_8UC3);
 	depthImg.create(depth_height, depth_width, CV_8UC1);
+	depthImg3H.create(depth_height, depth_width, CV_8UC3);
 
 	colorEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	depthEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -14,6 +16,9 @@ KinectV1Capture::KinectV1Capture() {
 KinectV1Capture::~KinectV1Capture() {
 	colorImg.release();
 	depthImg.release();
+	depthImg.release();
+
+	NuiShutdown();
 }
 
 bool KinectV1Capture::Init() {
@@ -31,7 +36,7 @@ bool KinectV1Capture::Init() {
 		return hr;
 	}
 
-	hr = NuiImageStreamOpen(NUI_IMAGE_TYPE_DEPTH, NUI_IMAGE_RESOLUTION_320x240, NULL, 2, depthEvent, &depthStream);
+	hr = NuiImageStreamOpen(NUI_IMAGE_TYPE_DEPTH, NUI_IMAGE_RESOLUTION_640x480, NULL, 2, depthEvent, &depthStream);
 	if (hr != S_OK) {
 		std::cout << "Open depth Stream failed" << std::endl;
 		NuiShutdown();
@@ -64,6 +69,12 @@ void KinectV1Capture::UpdateColorFrame() {
 		std::cout << "Get Color Image failed" << std::endl;
 	}
 
+	//Filps Img
+	cv::Mat nColorImg;
+	colorImg.copyTo(nColorImg);
+	cv::flip(nColorImg, colorImg, 1);
+	nColorImg.release();
+
 	pTexture->UnlockRect(0);
 	NuiImageStreamReleaseFrame(colorStream, colorFrame);
 }
@@ -77,32 +88,43 @@ void KinectV1Capture::UpdateDepthFrame() {
 	NUI_LOCKED_RECT LockedRect;
 	pTexture->LockRect(0, &LockedRect, NULL, 0);
 
-
-	uchar* mat_ptr = depthImg.data;
-
 	if (LockedRect.Pitch != 0) {
+
 		for (int i = 0; i < depthImg.rows; i++) {
-			uchar *ptr = depthImg.ptr<uchar>(i);
+			uchar *ptr = depthImg.data;
 			uchar *pBuffer = (uchar*)(LockedRect.pBits) + i * LockedRect.Pitch;
 			USHORT *pBufferRun = (USHORT*)pBuffer;
 
 			for (int j = 0; j < depthImg.cols; j++) {
-				//ptr[j] = 255 - (uchar)(256 * pBufferRun[j] / 4095);
-				//t_buffer[i][j] = pBufferRun[j];
-				mat_ptr[(i*depthImg.cols)+j] = pBufferRun[j] / 206;
-				if (pBufferRun[j] < buffer_min && pBufferRun[j] !=0)
-					buffer_min = pBufferRun[j];//6408
-				if(pBufferRun[j] > buffer_max)
-					buffer_max = pBufferRun[j];//31800
-			}
+				if (pBufferRun[j] < depth_min && pBufferRun[j] != 0)
+					ptr[(i*depthImg.cols) + j] = 0;//6408
+				else if (pBufferRun[j] > depth_max) {
+					ptr[(i*depthImg.cols) + j] = 0;//31800
+				}
+				else {
+					ptr[(i*depthImg.cols) + j] = 256 * pBufferRun[j] / 4095;
+				}
+			};
 		}
 	}
 	else {
 		std::cout << "Get Depth Image failed" << std::endl;
 	}
 
+	cv::flip(depthImg, depthImg, 1);
+
+	DepthImg1ChTo3CH();
+
 	pTexture->UnlockRect(0);
 	NuiImageStreamReleaseFrame(depthStream, depthFrame);
+}
+
+void KinectV1Capture::DepthImg1ChTo3CH() {
+	///cv::Mat depth8bit;
+	cv::Mat depht3HMask = cv::Mat(depthImg.rows, depthImg.cols, CV_8UC3, cv::Scalar(0, 255, 255));
+	//depthImg.convertTo(depth8bit, CV_8U, 255.0 / 10000);
+	cv::cvtColor(depthImg, depthImg3H, CV_GRAY2BGR);
+	cv::bitwise_and(depthImg3H, depht3HMask, depthImg3H);
 }
 
 void KinectV1Capture::UpdateFrame() {
@@ -123,6 +145,10 @@ cv::Mat KinectV1Capture::GetDepthImg() {
 	return depthImg;
 }
 
+cv::Mat KinectV1Capture::GetDepth3HImg() {
+	return depthImg3H;
+}
+
 cv::Size KinectV1Capture::GetColorImgSize() {
 	return colorImg.size();
 }
@@ -137,4 +163,21 @@ int KinectV1Capture::GetColorImgType() {
 
 int KinectV1Capture::GetDepthImgType() {
 	return depthImg.type();
+}
+
+void KinectV1Capture::SetMinDepth(int min) {
+	depth_min = 25392 * min / 1000 + 6408;
+	
+}
+
+void KinectV1Capture::SetMaxDepth(int max) {
+	depth_max = 25392 * max / 1000 + 6408;
+}
+
+void KinectV1Capture::Close() {
+	colorImg.release();
+	depthImg.release();
+	depthImg3H.release();
+
+	NuiShutdown();
 }

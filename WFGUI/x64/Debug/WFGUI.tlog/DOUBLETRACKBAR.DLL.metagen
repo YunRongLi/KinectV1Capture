@@ -1,0 +1,56 @@
+ImageRuntimeVersion: v4.0.30319
+Assembly DoubleTrackBar, Version=1.0.*, Culture=不因語言而異 (不因國別而異): 
+	hash=SHA1, flags=PublicKey
+Assembly mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a: 
+	hash=None, flags=None
+Assembly System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a: 
+	hash=None, flags=None
+Class DoubleTrackBar: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+  :System.Windows.Forms.Control
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Properties:
+    Thumbs SelectedThumb 'get set' : 
+    Int32 ValueLeft 'get set' : 
+    Int32 ValueRight 'get set' : 
+    Int32 Minimum 'get set' : 
+    Int32 Maximum 'get set' : 
+    Int32 SmallChange 'get set' : 
+  Events:
+    System.EventHandler ValueChanged: 
+    System.EventHandler LeftValueChanged: 
+    System.EventHandler RightValueChanged: 
+  Methods:
+    get_SelectedThumb(): PrivateScope, Public, HideBySig, SpecialName
+    get_ValueLeft(): PrivateScope, Public, HideBySig, SpecialName
+    set_ValueLeft(Int32): PrivateScope, Public, HideBySig, SpecialName
+    get_ValueRight(): PrivateScope, Public, HideBySig, SpecialName
+    set_ValueRight(Int32): PrivateScope, Public, HideBySig, SpecialName
+    get_Minimum(): PrivateScope, Public, HideBySig, SpecialName
+    set_Minimum(Int32): PrivateScope, Public, HideBySig, SpecialName
+    get_Maximum(): PrivateScope, Public, HideBySig, SpecialName
+    set_Maximum(Int32): PrivateScope, Public, HideBySig, SpecialName
+    get_SmallChange(): PrivateScope, Public, HideBySig, SpecialName
+    set_SmallChange(Int32): PrivateScope, Public, HideBySig, SpecialName
+    IncrementLeft(): PrivateScope, Public, HideBySig
+    IncrementRight(): PrivateScope, Public, HideBySig
+    DecrementLeft(): PrivateScope, Public, HideBySig
+    DecrementRight(): PrivateScope, Public, HideBySig
+    add_ValueChanged(EventHandler): PrivateScope, Public, HideBySig, SpecialName
+    remove_ValueChanged(EventHandler): PrivateScope, Public, HideBySig, SpecialName
+    add_LeftValueChanged(EventHandler): PrivateScope, Public, HideBySig, SpecialName
+    remove_LeftValueChanged(EventHandler): PrivateScope, Public, HideBySig, SpecialName
+    add_RightValueChanged(EventHandler): PrivateScope, Public, HideBySig, SpecialName
+    remove_RightValueChanged(EventHandler): PrivateScope, Public, HideBySig, SpecialName
+Struct DoubleTrackBar+Thumbs: AutoLayout, AnsiClass, Class, NestedPublic, Sealed
+  :System.Enum
+  Fields:
+    Int32 value__ : Public, SpecialName, RTSpecialName
+    Thumbs None = 0 : Public, Static, Literal, HasDefault
+    Thumbs Left = 1 : Public, Static, Literal, HasDefault
+    Thumbs Right = 2 : Public, Static, Literal, HasDefault
